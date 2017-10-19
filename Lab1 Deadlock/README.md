@@ -42,8 +42,11 @@
 一共有两个线程：main主线程，已经主线程中创建的线程t.
 
 流程图如下：
+
 <img src="./images/whylock1.png"/>
+   
 <img src="./images/whylock2.png"/>
+
 ----
 ##### 死锁产生的关键
 
