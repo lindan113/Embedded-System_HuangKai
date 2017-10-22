@@ -35,7 +35,8 @@ $	sudo apt-get install unzip
 将dolethz.zip解压到 dol文件夹中
 ```$	sudo unzip dol_ethz.zip -d dol```
 解压systemc
-$	sudo tar -zxvf systemc-2.3.1.tgz
+```$	sudo tar -zxvf systemc-2.3.1.tgz```
+
 <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab2%20DOLconfig/images/%E8%A7%A3%E5%8E%8B%E6%96%87%E4%BB%B6.png?raw=true"/>
 
 解压后进入systemc-2.3.1的目录下
@@ -63,13 +64,16 @@ $	sudo tar -zxvf systemc-2.3.1.tgz
 进入刚刚dol的文件夹```
 ```$	cd ../dol```
 修改build_zip.xml文件
+
 <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab2%20DOLconfig/images/%E4%BF%AE%E6%94%B9build_zip.xml%E6%96%87%E4%BB%B6.png?raw=true"/>
 
 然后是编译
 ```$	sudo ant -f build_zip.xml all```
+
 <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab2%20DOLconfig/images/sudo%20ant%20-f%20build_zip.xml%20all.png?raw=true"/>
 
 ### 2. 实验结果
+
 #### 运行第一个例子
 
 进入build/bin/mian路径下
