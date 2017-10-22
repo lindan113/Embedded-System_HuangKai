@@ -1,5 +1,5 @@
 该实验报告的GitHub链接为：
-
+[https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab2%20DOLconfig/Lab2.md](https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab2%20DOLconfig/Lab2.md)
 
 ## 嵌入式系统导论实验报告
 -------
