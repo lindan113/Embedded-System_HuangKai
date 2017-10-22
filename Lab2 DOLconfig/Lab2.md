@@ -32,8 +32,10 @@ $	sudo apt-get install unzip
 
 新建dol的文件夹 
 ```$	sudo mkdir dol```
+
 将dolethz.zip解压到 dol文件夹中
 ```$	sudo unzip dol_ethz.zip -d dol```
+
 解压systemc
 ```$	sudo tar -zxvf systemc-2.3.1.tgz```
 
@@ -41,10 +43,13 @@ $	sudo apt-get install unzip
 
 解压后进入systemc-2.3.1的目录下
 ```$	cd systemc-2.3.1```
+
 新建一个临时文件夹objdir
 ```$	sudo mkdir objdir```
+
 进入该文件夹objdir
 ```$	cd objdir```
+
 - 运行configure
 ```$	sudo ../configure CXX=g++ --disable-async-updates```
 
@@ -53,16 +58,19 @@ $	sudo apt-get install unzip
 
 - 编译
 ```$	sudo make install```
+
 <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab2%20DOLconfig/images/sudo%20make%20install.png?raw=true"/>
 
 编译完后文件目录如下
 <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab2%20DOLconfig/images/%E7%BC%96%E8%AF%91%E5%AE%8C%E5%90%8E%E6%96%87%E4%BB%B6%E7%9B%AE%E5%BD%95.png?raw=true"/>
 记录当前的工作路径
 ```$	sudo pwd```
+
 <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab2%20DOLconfig/images/%E5%BD%93%E5%89%8D%E7%9A%84%E5%B7%A5%E4%BD%9C%E8%B7%AF%E5%BE%84.png?raw=true"/>
 
 进入刚刚dol的文件夹```
 ```$	cd ../dol```
+
 修改build_zip.xml文件
 
 <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab2%20DOLconfig/images/%E4%BF%AE%E6%94%B9build_zip.xml%E6%96%87%E4%BB%B6.png?raw=true"/>
