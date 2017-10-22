@@ -54,6 +54,7 @@ $	sudo apt-get install unzip
 ```$	sudo ../configure CXX=g++ --disable-async-updates```
 
 **运行configure之后的截图**
+
 <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab2%20DOLconfig/images/%E8%BF%90%E8%A1%8Cconfigure%E4%B9%8B%E5%90%8E.png?raw=true"/>
 
 - 编译
@@ -68,7 +69,7 @@ $	sudo apt-get install unzip
 
 <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab2%20DOLconfig/images/%E5%BD%93%E5%89%8D%E7%9A%84%E5%B7%A5%E4%BD%9C%E8%B7%AF%E5%BE%84.png?raw=true"/>
 
-进入刚刚dol的文件夹```
+进入刚刚dol的文件夹
 ```$	cd ../dol```
 
 修改build_zip.xml文件
