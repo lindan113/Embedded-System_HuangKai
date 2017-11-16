@@ -2,6 +2,7 @@
 https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab7%20Keil%20InputOutput_4C123asm/Lab7%20Keil.md
 
 ## 嵌入式系统导论实验报告
+
 -------
 
 |  姓名  |    学号    |  班级  |     电话      |        邮箱         |
@@ -11,57 +12,41 @@ https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab7%20Keil%20
 -----
 
 
-### 1.实验题目
-
-lab7：keil安装和仿真
+### 1.实验题目: lab7：keil安装和仿真
 
 ### 2.实验过程与结果
 
-点击左上角的`Build`进行编译，或者按快捷键`F7`；
-
-选择导航栏`Debug` ，点击start Debug；
-
-选择导航栏`Peripheral`，点击Port F；
+- 点击左上角的`Build`进行编译，或者按快捷键`F7`；
+- 选择导航栏`Debug` ，点击start Debug；
+- 选择导航栏`Peripheral`，点击Port F；
 
 <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab7%20Keil%20InputOutput_4C123asm/images/start%20Debug.png?raw=true"/>
 
-点击左上角的`Run`进行编译，或者按快捷键`F5`；
+- 点击左上角的`Run`进行编译，或者按快捷键`F5`；
+
 
 - 开始运行，没有按下按键：
 
 <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab7%20Keil%20InputOutput_4C123asm/images/%E5%BC%80%E5%A7%8B%E8%BF%90%E8%A1%8C%20%E4%B8%8D%E6%8C%89%E4%B8%8B.png?raw=true"/>
 
-点击TExas Launchad 中的输入按键，观察输出端口。
+- 点击TExas Launchad 中的输入按键，观察输出端口。
+  - 按下switch1：Port 2的LED亮蓝色BLUE
 
-- 按下switch1：Port 2的LED亮蓝色BLUE
+    <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab7%20Keil%20InputOutput_4C123asm/images/%E6%8C%89%E6%8C%89%E9%94%AE1.png?raw=true"/>
 
-<img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab7%20Keil%20InputOutput_4C123asm/images/%E6%8C%89%E6%8C%89%E9%94%AE1.png?raw=true"/>
+  - 按下switch2：Port 1的LED亮红色RED
 
-- 按下switch2：Port 1的LED亮红色RED
+    <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab7%20Keil%20InputOutput_4C123asm/images/%E6%8C%89%E6%8C%89%E9%94%AE2.png?raw=true"/>
 
-<img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab7%20Keil%20InputOutput_4C123asm/images/%E6%8C%89%E6%8C%89%E9%94%AE2.png?raw=true"/>
+  - 两个按键都按下：Port 3的LED亮绿色GREEN
 
-- 两个按键都按下：Port 3的LED亮绿色GREEN
-
-<img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab7%20Keil%20InputOutput_4C123asm/images/%E9%83%BD%E6%8C%89%E4%B8%8B.png?raw=true"/>
-
-
-
-<img src=""/>
-
-
-
-<img src=""/>
-
-
+    <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab7%20Keil%20InputOutput_4C123asm/images/%E9%83%BD%E6%8C%89%E4%B8%8B.png?raw=true"/>
 
 
 
 ### 3. 代码分析
 
-main.s文件是汇编语言代码。
-
-
+main.s文件是我们要分析的汇编语言代码。
 
 ```assembly
 Start
@@ -237,49 +222,53 @@ B   loop
 
 
 
-修改代码：使得三个灯都亮。
+#### **修改代码：使得三个灯都亮。**
 
-不修改代码，正常情况下，不会出现三个灯都亮，
+- 不修改代码，正常情况下，不会出现三个灯都亮。
 
-再看loop循环函数：
+  再看一遍loop循环函数：
 
-```assembly
-LDR R0, =FIFTHSEC               ; R0 = FIFTHSEC (delay 0.2 second)
-BL  delay                       ; delay at least (3*R0) cycles
-BL  PortF_Input                 ; read all of the switches on Port F
-CMP R0, #0x01                   ; R0 == 0x01?
-BEQ sw1pressed                  ; if so, switch 1 pressed
-CMP R0, #0x10                   ; R0 == 0x10?
-BEQ sw2pressed                  ; if so, switch 2 pressed
-CMP R0, #0x00                   ; R0 == 0x00?
-BEQ bothpressed                 ; if so, both switches pressed
-CMP R0, #0x11                   ; R0 == 0x11?
-BEQ nopressed                   ; if so, neither switch pressed
-```
-在四个比较跳转语句之后，还有三句，意味着如果R0不是以上四种情况的时候，会执行下面的语句：
+  ```assembly
+  LDR R0, =FIFTHSEC               ; R0 = FIFTHSEC (delay 0.2 second)
+  BL  delay                       ; delay at least (3*R0) cycles
+  BL  PortF_Input                 ; read all of the switches on Port F
+  CMP R0, #0x01                   ; R0 == 0x01?
+  BEQ sw1pressed                  ; if so, switch 1 pressed
+  CMP R0, #0x10                   ; R0 == 0x10?
+  BEQ sw2pressed                  ; if so, switch 2 pressed
+  CMP R0, #0x00                   ; R0 == 0x00?
+  BEQ bothpressed                 ; if so, both switches pressed
+  CMP R0, #0x11                   ; R0 == 0x11?
+  BEQ nopressed                   ; if so, neither switch pressed
+  ```
 
-```assembly
-MOV R0, #(RED+GREEN+BLUE)       ; R0 = (RED|GREEN|BLUE) (all LEDs on)
-BL  PortF_Output                ; turn all of the LEDs on
-B   loop
-```
+  在四个比较跳转语句之后，还有三句，意味着如果R0不是以上四种情况的时候，会执行下面的语句：
 
-但是实际上对于两个按键（只有开和关两种状态），我们一共四种情况，所以这段代码不会执行。
-
-
-
-修改功能，在没有按下按键的时候，三个灯都亮。
-
-修改nopressed函数：
-
-```assembly
-nopressed
+  ```assembly
   MOV R0, #(RED+GREEN+BLUE)       ; R0 = (RED|GREEN|BLUE) (all LEDs on)
-; MOV R0, #0                      ; R0 = 0 (no LEDs on)
-  BL  PortF_Output                ; turn all of the LEDs off
+  BL  PortF_Output                ; turn all of the LEDs on
   B   loop
-```
+  ```
 
+  但是实际上对于两个按键（只有开和关两种状态），我们一共四种情况，所以这段代码不会执行。
+
+
+
+- 修改功能，在没有按下按键的时候，三个灯都亮。
+
+  修改nopressed函数：
+
+  ```assembly
+  nopressed
+    MOV R0, #(RED+GREEN+BLUE)       ; R0 = (RED|GREEN|BLUE) (all LEDs on)
+  ; MOV R0, #0                      ; R0 = 0 (no LEDs on)
+    BL  PortF_Output                ; turn all of the LEDs off
+    B   loop
+  ```
+
+  实验结果：没有按下按键的时候三个灯都亮了。
+
+  <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab7%20Keil%20InputOutput_4C123asm/images/%E4%B8%89%E4%B8%AA%E7%81%AF%E4%BA%AE.png?raw=true"/>
 
 
 
@@ -301,7 +290,49 @@ nopressed
 
 - **指令BL和B的区别**
 
-  B或BL指令引起处理器转移到“子程序名”处开始执行。两者的不同之处在于BL指令在转移到子程序执行之前，将其下一条指令的地址拷贝到LR（链接寄存器，R14）。
+  - B或BL指令引起处理器转移到“子程序名”处开始执行。两者的不同之处在于BL指令在转移到子程序执行之前，将其下一条指令的地址拷贝到LR（链接寄存器，R14）。
+  - 由于BL指令保存了下条指令的地址，因此在子程序最后通过`BX LR`或者是`MOV PC, LR`可实现子程序的返回。而B指令则无法实现子程序的返回，只能实现单纯的跳转。
 
-  由于BL指令保存了下条指令的地址，因此在子程序最后通过`BX LR`或者是`MOV PC, LR`可实现子程序的返回。而B指令则无法实现子程序的返回，只能实现单纯的跳转。
 
+
+- LDR指令总结
+
+  - LDR加载指令
+
+  LDR指令的格式为：
+
+  ```LDR{条件}  目的寄存器，<存储器地址>```
+
+  LDR指令用亍从存储器中将一个32位的字数据传送到目的寄存器中。该指令通常用亍从存储器中读取32位的字数据到通用寄存器，然后对数据迕行处理。当程序计数器PC作为目的寄存器时，指令从存储器中读取的字数据被当作目的地址，从而可以实现程序流程的跳转。
+
+  指令示例：
+
+  ```assembly
+  LDR R0，[R1]         ；将存储器地址为R1的字数据读入寄存器R0。
+  LDR R0，[R1，R2]  	；将存储器地址为R1+R2的字数据读入寄存器R0。
+  LDR R0，[R1，＃8]   	；将存储器地址为R1+8的字数据读入寄存器R0。
+  LDR R0，[R1，R2]！		；将存储器地址为R1+R2的字数据读入寄存器R0,幵将新地址R1＋R2写入R1。
+  LDR R0，[R1，＃8]！  	；将存储器地址为R1+8的字数据读入寄存器R0，幵将新地址R1＋8写入R1。 
+  LDR R0，[R1]，R2  	  ；将存储器地址为R1的字数据读入寄存器R0，幵将新地址R1＋R2写入R1。
+  LDR R0，[R1，R2，LSL＃2]  ；将存储器地址为R1＋R2×4的字数据读入寄存器R0，并将新地址R1＋R2×4写入R1。
+  LDR R0，[R1]，R2，LSL＃2  ；将存储器地址为R1的字数据读入寄存器R0，幵将新地址R1＋R2×4写入R1。”
+  ```
+
+  - LDR伪指令
+
+  LDR伪指令的形式是`LDR Rn, =expr`
+
+  指令示例
+
+  ```assembly
+  LDR R1, =GPIO_PORTF_DATA_R ; pointer to Port F data
+  LDR R0, [R1]               ; read all of Port F
+  ```
+
+  在前面代码分析中已经提过，不再赘述：
+
+
+
+- 在实现三个灯同时亮的时候，修改了代码但是debug之后没有看到应有的现象，结果和原来一样。
+
+  - 原因：修改了代码要先rebuild！！！
