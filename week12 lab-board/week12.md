@@ -17,6 +17,8 @@ https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab7%20Keil%20
 
 #### 2.1 **InputOutput_4C123 **project
 
+实验要求：需要修改程序改变按键对应的驱动灯颜色，做个前后对比，并作调试分析。
+
 ##### 2.1.1 修改代码前，simulator仿真：
 
 - 点击左上角的`Build`进行编译，或者按快捷键`F7`；
@@ -25,6 +27,8 @@ https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab7%20Keil%20
 
 <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab7%20Keil%20InputOutput_4C123asm/images/start%20Debug.png?raw=true"/>
 
+
+
 - 点击左上角的`Run`进行编译，或者按快捷键`F5`；
 
 
@@ -32,39 +36,161 @@ https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab7%20Keil%20
 
 <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab7%20Keil%20InputOutput_4C123asm/images/%E5%BC%80%E5%A7%8B%E8%BF%90%E8%A1%8C%20%E4%B8%8D%E6%8C%89%E4%B8%8B.png?raw=true"/>
 
+
+
 - 点击TExas Launchad 中的输入按键，观察输出端口。
 
   - 按下switch1：Port 2的LED亮蓝色BLUE
 
     <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab7%20Keil%20InputOutput_4C123asm/images/%E6%8C%89%E6%8C%89%E9%94%AE1.png?raw=true"/>
 
+    ​
+
   - 按下switch2：Port 1的LED亮红色RED
 
     <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab7%20Keil%20InputOutput_4C123asm/images/%E6%8C%89%E6%8C%89%E9%94%AE2.png?raw=true"/>
+
+    ​
 
   - 两个按键都按下：Port 3的LED亮绿色GREEN
 
     <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab7%20Keil%20InputOutput_4C123asm/images/%E9%83%BD%E6%8C%89%E4%B8%8B.png?raw=true"/>
 
+    ​
+
   ##### 2.1.2 修改代码，使得输出灯的颜色有改变。并在实验板上debug看结果。
 
 - 代码修改为：
 
-  <img src=""/>
+  <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/week12%20lab-board/images/%E4%BF%AE%E6%94%B9%E7%81%AF%E9%A2%9C%E8%89%B2%E6%94%B9%E4%BB%A3%E7%A0%81.png?raw=true"/>
 
 - 实验现象：
 
-  - 按下switch1：Port 2的LED亮蓝色BLUE
+  - 按下switch1：LED亮粉色PINK
 
-    <img src=""/>
+    <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/week12%20lab-board/images/pink.jpg?raw=true"/>
 
-  - 按下switch2：Port 1的LED亮红色RED
+    ​
 
-    <img src=""/>
+  - 按下switch2：LED天蓝色SKY_BLUE
 
-  - 两个按键都按下：Port 3的LED亮绿色GREEN
+    <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/week12%20lab-board/images/blue.jpg?raw=true"/>
 
-    <img src=""/>
+    ​
+
+  - 两个按键都按下：LED亮黄色YELLOW
+
+    <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/week12%20lab-board/images/yellow.jpg?raw=true"/>
+
+    ​
+
+
+
+##### 2.1.3 代码分析
+
+初始化Init流程图：
+
+```mermaid
+graph LR
+A(activate clock) --> B(delay) 
+B --> C(unlock)
+C --> D(disable analog,enable digital)
+D --> E(PCTL GPIO)
+E --> F(set input output)
+F --> G(disable alt funct)
+G --> H(enable pull-up)
+```
+
+main函数流程图：
+
+```mermaid
+graph LR
+A(初始化PortF_Init) --> B{PortF_Input}
+    B -->|0x01,SW1 pressed| C[PINK]
+    B -->|0x10,SW2 pressed| D[SKY_BLUE]
+    B -->|0x00,both switches pressed| E[YELLOW]
+    B -->|0x11,no switches pressed| F[0]
+```
+
+
+
+#### 2.2 **Not_gate **project
+
+实验要求：
+
+修改输出位到portd.2后，与之前的portd.3截图做对比，
+
+然后修改程序，使得脉宽有所变化，也把修改前后截图做对比，并做程序修改分析对比
+
+
+
+修改代码分析：
+
+GPIO_PORTD_DIR_R设置输入输出。
+
+0x08 = 0000 1000 ，即portD.3为输出
+
+0x04 = 0000 0100 ，即portD.2为输出
+
+```assembly
+    LDR R1, =GPIO_PORTD_DIR_R       ; R1 = &GPIO_PORTD_DIR_R
+    LDR R0, [R1]                    ; R0 = [R1]
+    ORR R0, R0, #0x04               ; R0 = R0|0x04 (make PD2 output)
+;	ORR R0, R0, #0x08               ; R0 = R0|0x08 (make PD3 output)
+	BIC R0, R0, #0x01				; R0 = R0 & NOT(0x01) (make PD0 input)
+    STR R0, [R1]                    ; [R1] = R0
+```
+
+
+
+GPIO_PORTD_AFSEL_R作用是disable alter function.
+
+涉及到输入输出端口。PD2,PD0就是0x04+0x01=0x05
+
+```assembly
+; 4) regular port function
+    LDR R1, =GPIO_PORTD_AFSEL_R     ; R1 = &GPIO_PORTD_AFSEL_R
+    LDR R0, [R1]                    ; R0 = [R1]
+    BIC R0, R0, #0x05               ; R0 = R0&~0x05 (disable alt funct on PD2,PD0)
+;	BIC R0, R0, #0x09               ; R0 = R0&~0x09 (disable alt funct on PD3,PD0)
+    STR R0, [R1]                    ; [R1] = R0
+```
+
+GPIO_PORTD_DEN_R作用是允许数字信号。
+
+涉及到输入输出端口。PD2,PD0就是0x04+0x01=0x05
+
+```assembly
+; 5) enable digital port
+    LDR R1, =GPIO_PORTD_DEN_R       ; R1 = &GPIO_PORTD_DEN_R
+    LDR R0, [R1]                    ; R0 = [R1]
+	ORR R0, R0, #0x05               ; R0 = R0|0x09 (enable digital I/O on PD2,PD0)
+;   ORR R0, R0, #0x09               ; R0 = R0|0x09 (enable digital I/O on PD3,PD0)
+    STR R0, [R1]                    ; [R1] = R0
+```
+
+
+
+```assembly
+loop
+	LDR R1,[R0]
+	AND	R1,#0x01		; Isolate PD0
+	EOR	R1,#0x01		; NOT state of PD0 read into R1
+	STR R1,[R0]			; STR R1,[R0],
+	nop
+	nop
+	
+	LSL R1,#2			; SHIFT left negated state of PD0 read into R1
+;	LSL R1,#3			; SHIFT left negated state of PD0 read into R1
+	STR R1,[R0]			; Write to PortD DATA register to update LED on PD3
+    B loop               ; unconditional branch to 'loop'
+```
+
+
+
+
+
+
 
 ### 3. 代码分析
 
