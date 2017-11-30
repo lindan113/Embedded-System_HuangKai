@@ -1,5 +1,5 @@
 该实验报告的GitHub链接为：
-https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab7%20Keil%20InputOutput_4C123asm/Lab7%20Keil.md
+https://github.com/lindan113/Embedded-System_HuangKai/blob/master/week12%20lab-board/week12.md
 
 ### 嵌入式系统导论实验报告
 
@@ -11,11 +11,11 @@ https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab7%20Keil%20
 
 ------
 
-### 1.实验题目: week12：lab-board
+### 1. 实验题目: week12：lab-board
 
-### 2.实验过程与结果
+### 2. 实验过程与结果
 
-#### 2.1 **InputOutput_4C123 **project
+#### 2.1 InputOutput_4C123project
 
 实验要求：需要修改程序改变按键对应的驱动灯颜色，做个前后对比，并作调试分析。
 
@@ -90,39 +90,30 @@ https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab7%20Keil%20
 
 初始化Init流程图：
 
-```mermaid
-graph LR
-A(activate clock) --> B(delay) 
-B --> C(unlock)
-C --> D(disable analog,enable digital)
-D --> E(PCTL GPIO)
-E --> F(set input output)
-F --> G(disable alt funct)
-G --> H(enable pull-up)
-```
+<img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/week12%20lab-board/images/init%E6%B5%81%E7%A8%8B%E5%9B%BE.png?raw=true"/>
 
 main函数流程图：
 
-```mermaid
-graph LR
-A(初始化PortF_Init) --> B{PortF_Input}
-    B -->|0x01,SW1 pressed| C[PINK]
-    B -->|0x10,SW2 pressed| D[SKY_BLUE]
-    B -->|0x00,both switches pressed| E[YELLOW]
-    B -->|0x11,no switches pressed| F[0]
-```
+<img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/week12%20lab-board/images/main%E6%B5%81%E7%A8%8B%E5%9B%BE.png?raw=true"/>
 
 
 
-#### 2.2 **Not_gate **project
+#### 2.2 Not_gate project
 
 实验要求：
 
-修改输出位到portd.2后，与之前的portd.3截图做对比，
+- 修改输出位到portd.2后，与之前的portd.3截图做对比，
+- 然后修改程序，使得脉宽有所变化，也把修改前后截图做对比，并做程序修改分析对比
 
-然后修改程序，使得脉宽有所变化，也把修改前后截图做对比，并做程序修改分析对比
 
 
+- 修改代码前运行，逻辑分析仪看输出结果：
+
+![img](https://github.com/lindan113/Embedded-System_HuangKai/blob/master/week12%20lab-board/images/PD3%E8%BE%93%E5%87%BA.png?raw=true)
+
+
+
+##### 2.2.1 修改输出位到portD.2
 
 修改代码分析：
 
@@ -156,6 +147,8 @@ GPIO_PORTD_AFSEL_R作用是disable alter function.
     STR R0, [R1]                    ; [R1] = R0
 ```
 
+
+
 GPIO_PORTD_DEN_R作用是允许数字信号。
 
 涉及到输入输出端口。PD2,PD0就是0x04+0x01=0x05
@@ -171,28 +164,80 @@ GPIO_PORTD_DEN_R作用是允许数字信号。
 
 
 
+函数主体
+
+```assembly
+Start
+    BL  GPIO_Init					;函数调用GPIO_Init，初始化 
+    LDR R0, =GPIO_PORTD_DATA_R  	  ; R0=GPIO_PORTD_DATA_R，R0得到portD的data
+```
+
+```assembly
+loop
+	LDR R1,[R0]			; R1=地址为GPIO_PORTD_DATA_R的值，即R1得到portD的data
+	AND	R1,#0x01		; Isolate PD0，得到portD.0输入的值,结果R1=0x00
+	EOR	R1,#0x01		; NOT state of PD0 read into R1，取反，结果R1=0x01=0000 0001
+	STR R1,[R0]			; STR R1,[R0],把R1写到端口portD，其中PD3-1 = 0，PD0是输入不变。
+;   *************** 此时产生了方波的下降沿 ***************
+	nop				    ; 延时
+	nop					; 延时
+;   此处的时间影响了方波处于“0”的时间长
+
+	LSL R1,#2			; SHIFT left negated state of PD0 read into R1，使得R1=0x40=00000100
+;	LSL R1,#3			; SHIFT left negated state of PD0 read into R1
+	STR R1,[R0]			; Write to PortD DATA register to update LED on PD3
+	; 把R1(00000100)写到端口portD，其中PD2 = 1
+;   *************** 此时产生了方波的上升沿 ***************
+    B loop               ; unconditional branch to 'loop',继续循环
+```
+
+逻辑分析仪结果：
+
+<img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/week12%20lab-board/images/PD2%E8%BE%93%E5%87%BA%E6%96%B9%E6%B3%A2.png?raw=true"/>
+
+可以看到输出端口修改为PD2, PD3输出为0
+
+
+
+##### 2.2.2 修改程序，使得脉宽有所变化。
+
 ```assembly
 loop
 	LDR R1,[R0]
 	AND	R1,#0x01		; Isolate PD0
 	EOR	R1,#0x01		; NOT state of PD0 read into R1
 	STR R1,[R0]			; STR R1,[R0],
+;   *************** 此时产生了方波的下降沿 ***************	
 	nop
 	nop
-	
+;  增加了STR等语句，STR是存储数据，一个耗时操作	
+	STR R1,[R0]
+	STR R1,[R0]
+	STR R1,[R0]
+	nop
+	nop
+	nop
+	nop
 	LSL R1,#2			; SHIFT left negated state of PD0 read into R1
 ;	LSL R1,#3			; SHIFT left negated state of PD0 read into R1
 	STR R1,[R0]			; Write to PortD DATA register to update LED on PD3
-    B loop               ; unconditional branch to 'loop'
+;   *************** 此时产生了方波的上升沿 ***************	
+    B loop                          ; unconditional branch to 'loop'
 ```
 
+实验结果：
+
+<img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/week12%20lab-board/images/PD2%E8%BE%93%E5%87%BA%E6%96%B9%E6%B3%A2%E6%94%B9%E8%84%89%E5%AE%BD.png?raw=true"/>
 
 
 
 
 
 
-### 3. 代码分析
+
+#### 2.3. 补充：week11 InputOutput_4C123asm project
+
+##### 2.3.1 代码分析
 
 main.s文件是我们要分析的汇编语言代码。
 
@@ -366,7 +411,7 @@ B   loop
 
 
 
-#### **修改代码：使得三个灯都亮。**
+##### 2.3.2 修改代码：使得三个灯都亮。
 
 - 不修改代码，正常情况下，不会出现三个灯都亮。
 
@@ -413,9 +458,9 @@ B   loop
 
   <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/Lab7%20Keil%20InputOutput_4C123asm/images/%E4%B8%89%E4%B8%AA%E7%81%AF%E4%BA%AE.png?raw=true"/>
 
-### 3.实验心得
+  ​
 
-
+### 3. 实验心得
 
 - **实验遇到的问题：PortF_Output函数中，通过指令`STR R0, [R1]`点亮灯的时候，GPIO_PORTF_DATA_R端口的数据是BLUE (0000 0100) 吗？**
 
@@ -439,38 +484,51 @@ B   loop
 
   - LDR加载指令
 
-  LDR指令的格式为：
+    LDR指令的格式为：
 
-  ```LDR{条件}  目的寄存器，<存储器地址>```
+    ```LDR{条件}  目的寄存器，<存储器地址>```
 
-  LDR指令用亍从存储器中将一个32位的字数据传送到目的寄存器中。该指令通常用亍从存储器中读取32位的字数据到通用寄存器，然后对数据迕行处理。当程序计数器PC作为目的寄存器时，指令从存储器中读取的字数据被当作目的地址，从而可以实现程序流程的跳转。
+    LDR指令用亍从存储器中将一个32位的字数据传送到目的寄存器中。该指令通常用亍从存储器中读取32位的字数据到通用寄存器，然后对数据迕行处理。当程序计数器PC作为目的寄存器时，指令从存储器中读取的字数据被当作目的地址，从而可以实现程序流程的跳转。
 
-  指令示例：
+    指令示例：
 
-  ```assembly
-  LDR R0，[R1]         ；将存储器地址为R1的字数据读入寄存器R0。
-  LDR R0，[R1，R2]  	；将存储器地址为R1+R2的字数据读入寄存器R0。
-  LDR R0，[R1，＃8]   	；将存储器地址为R1+8的字数据读入寄存器R0。
-  LDR R0，[R1，R2]		 ；将存储器地址为R1+R2的字数据读入寄存器R0,幵将新地址R1＋R2写入R1。
-  LDR R0，[R1，＃8]  	；将存储器地址为R1+8的字数据读入寄存器R0，幵将新地址R1＋8写入R1。 
-  LDR R0，[R1]，R2  	  ；将存储器地址为R1的字数据读入寄存器R0，幵将新地址R1＋R2写入R1。
-  LDR R0，[R1，R2，LSL＃2]  ；将存储器地址为R1＋R2×4的字数据读入寄存器R0，并将新地址R1＋R2×4写入R1。
-  LDR R0，[R1]，R2，LSL＃2  ；将存储器地址为R1的字数据读入寄存器R0，幵将新地址R1＋R2×4写入R1。”
-  ```
+    ```assembly
+    LDR R0，[R1]         ;将存储器地址为R1的字数据读入寄存器R0。
+    LDR R0，[R1，R2]  	;将存储器地址为R1+R2的字数据读入寄存器R0。
+    LDR R0，[R1，＃8]   	;将存储器地址为R1+8的字数据读入寄存器R0。
+    LDR R0，[R1，R2]		 ;将存储器地址为R1+R2的字数据读入寄存器R0,幵将新地址R1＋R2写入R1。
+    LDR R0，[R1，＃8]  	 ;将存储器地址为R1+8的字数据读入寄存器R0，幵将新地址R1＋8写入R1。 
+    LDR R0，[R1]，R2  	  ;将存储器地址为R1的字数据读入寄存器R0，幵将新地址R1＋R2写入R1。
+    LDR R0，[R1，R2，LSL＃2]  ;将存储器地址为R1＋R2×4的字数据读入寄存器R0，并将新地址R1＋R2×4写入R1。
+    LDR R0，[R1]，R2，LSL＃2  ;将存储器地址为R1的字数据读入寄存器R0，幵将新地址R1＋R2×4写入R1。”
+    ```
+
+    ​
 
   - LDR伪指令
 
-  LDR伪指令的形式是`LDR Rn, =expr;`
+    LDR伪指令的形式是`LDR Rn, =expr;`
 
-  指令示例
+    指令示例
 
-  ```assembly
-  LDR R1, =GPIO_PORTF_DATA_R ; pointer to Port F data
-  LDR R0, [R1]               ; read all of Port F
-  ```
+    ```assembly
+    LDR R1, =GPIO_PORTF_DATA_R ; pointer to Port F data
+    LDR R0, [R1]               ; read all of Port F
+    ```
 
-  在前面代码分析中已经提过，不再赘述：
+  ​	在前面代码分析中已经提过，不再赘述：
 
 
-- 在实现三个灯同时亮的时候，修改了代码但是debug之后没有看到应有的现象，结果和原来一样。
+- 修改了代码但是debug之后没有看到应有的现象，结果和原来一样。
   - 原因：修改了代码要先rebuild！！！
+
+
+- 逻辑分析仪的使用：
+
+  - 查看端口输出，发现1几乎看不到。原因在于纵坐标的取值范围。
+
+    <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/week12%20lab-board/images/analog.png?raw=true"/>
+
+    在纵坐标，右键，修改为“Bit”显示。之后就可以看到正常的方波了。
+
+    <img src="https://github.com/lindan113/Embedded-System_HuangKai/blob/master/week12%20lab-board/images/%E6%94%B9%E4%B8%BAbit%E7%9C%8B.PNG?raw=true"/>
